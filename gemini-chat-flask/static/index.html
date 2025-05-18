@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-900 text-white">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gemini Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="h-full flex flex-col items-center justify-center">
+    <div class="w-full max-w-2xl p-4">
+      <h1 class="text-3xl font-bold mb-4 text-center">Gemini Chatbot</h1>
+      <div id="chat" class="bg-gray-800 p-4 h-[400px] overflow-y-auto rounded mb-4 space-y-2"></div>
+      <form id="chat-form" class="flex gap-2">
+        <input
+          id="message"
+          type="text"
+          class="flex-1 p-2 rounded bg-gray-700 text-white"
+          placeholder="Type your message..."
+          required
+        />
+        <button class="bg-green-500 px-4 py-2 rounded text-white">Send</button>
+      </form>
+    </div>
+
+    <script>
+      const form = document.getElementById('chat-form');
+      const messageInput = document.getElementById('message');
+      const chat = document.getElementById('chat');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userMessage = messageInput.value;
+        appendMessage('You', userMessage);
+        messageInput.value = '';
+
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: userMessage }),
+        });
+
+        const data = await response.json();
+        appendMessage('Gemini', data.response);
+      });
+
+      function appendMessage(sender, text) {
+        const messageEl = document.createElement('div');
+        messageEl.innerHTML = `<strong>${sender}:</strong> ${text}`;
+        chat.appendChild(messageEl);
+        chat.scrollTop = chat.scrollHeight;
+      }
+    </script>
+  </body>
+</html>
